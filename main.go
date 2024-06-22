@@ -52,6 +52,10 @@ func main() {
 	var method string
 	flag.StringVar(&method, "method", "GET", "HTTP method to use")
 
+	// HTTP status code to parse
+	var statusCodeToMatch int
+	flag.IntVar(&statusCodeToMatch, "mc", 1, "status code to match (default none)")
+
 	flag.Parse()
 
 	// make an actual time.Duration out of the timeout
@@ -96,7 +100,7 @@ func main() {
 
 				// always try HTTPS first
 				withProto := "https://" + url
-				if isListening(client, withProto, method) {
+				if isListening(client, withProto, method, statusCodeToMatch) {
 					output <- withProto
 
 					// skip trying HTTP if --prefer-https is set
@@ -120,7 +124,7 @@ func main() {
 		go func() {
 			for url := range httpURLs {
 				withProto := "http://" + url
-				if isListening(client, withProto, method) {
+				if isListening(client, withProto, method, statusCodeToMatch) {
 					output <- withProto
 					continue
 				}
@@ -210,7 +214,7 @@ func main() {
 	outputWG.Wait()
 }
 
-func isListening(client *http.Client, url, method string) bool {
+func isListening(client *http.Client, url, method string, statusCodeToMatch int) bool {
 
 	req, err := http.NewRequest(method, url, nil)
 	if err != nil {
@@ -223,6 +227,18 @@ func isListening(client *http.Client, url, method string) bool {
 	resp, err := client.Do(req)
 	if resp != nil {
 		io.Copy(ioutil.Discard, resp.Body)
+		//are we parsing status codes?
+		if statusCodeToMatch != 1 {
+
+			//is it the wrong code
+			if resp.StatusCode != statusCodeToMatch {
+
+				//if so cloase the resp var and close
+				resp.Body.Close()
+				return false
+			}
+
+		}
 		resp.Body.Close()
 	}
 
