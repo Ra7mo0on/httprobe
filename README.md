@@ -1,84 +1,53 @@
 # httprobe
 
-Take a list of domains and probe for working http and https servers.
+**Effortlessly probe a list of domains for active HTTP and HTTPS servers!**
 
-## Install
+---
 
+## 📥 Installation
+
+To get started with `httprobe`, you can install it quickly using Go. Follow these simple steps:
+
+### Requirements
+
+- [Go](https://golang.org/dl/) (version 1.17 or later)
+
+### Installation Command
+
+Open your terminal and run the following command to install `httprobe`:
+
+```bash
+go install github.com/tomnomnom/httprobe@latest
 ```
-▶ go install github.com/tomnomnom/httprobe@latest
+## 🛠 Usage
+Using httprobe is straightforward. After installation, you can pipe in a list of domains or URLs, and it will check for active HTTP/HTTPS servers.
+### Basic Usage Example
 ```
-
-## Basic Usage
-
-httprobe accepts line-delimited domains on `stdin`:
-
+cat domains.txt | httprobe
 ```
-▶ cat recon/example/domains.txt
-example.com
-example.edu
-example.net
-▶ cat recon/example/domains.txt | httprobe
-http://example.com
-http://example.net
-http://example.edu
-https://example.com
-https://example.edu
-https://example.net
+This command checks which domains from the domains.txt file respond on HTTP or HTTPS.
+### Advanced Usage
+You can customize the behavior of httprobe with additional flags. Here are some useful options:
+- -p: Add additional ports to probe, e.g., 8080 or 8443.
+- -c: Set a concurrency limit for probing.
+Example:
 ```
-
-## Extra Probes
-
-By default httprobe checks for HTTP on port 80 and HTTPS on port 443. You can add additional
-probes with the `-p` flag by specifying a protocol and port pair:
-
+cat domains.txt | httprobe -p http:8080 -c 50
 ```
-▶ cat domains.txt | httprobe -p http:81 -p https:8443
-```
-
-## Concurrency
-
-You can set the concurrency level with the `-c` flag:
-
-```
-▶ cat domains.txt | httprobe -c 50
-```
-
-## Timeout
-
-You can change the timeout by using the `-t` flag and specifying a timeout in milliseconds:
-
-```
-▶ cat domains.txt | httprobe -t 20000
-```
-
-## Skipping Default Probes
-
-If you don't want to probe for HTTP on port 80 or HTTPS on port 443, you can use the
-`-s` flag. You'll need to specify the probes you do want using the `-p` flag:
-
-```
-▶ cat domains.txt | httprobe -s -p https:8443
-```
-
-## Prefer HTTPS
-
-Sometimes you don't care about checking HTTP if HTTPS is working. You can do that with the `--prefer-https` flag:
-
-```
-▶ cat domains.txt | httprobe --prefer-https
-```
-
-## Docker
-
-Build the docker container:
-
-```
-▶ docker build -t httprobe .
-```
-
-Run the container, passing the contents of a file into stdin of the process inside the container. `-i` is required to correctly map `stdin` into the container and to the `httprobe` binary.
-
-```
-▶ cat domains.txt | docker run -i httprobe <args>
-```
-
+This command probes both port 8080 and the default HTTP/HTTPS ports for the domains listed in domains.txt and uses 50 concurrent requests.
+## ⚙️ Features
+- Efficient: Quickly probes large domain lists.
+- Flexible: Supports custom ports and concurrency levels.
+- Simple: Easy to integrate into pipelines and other tools.
+## 🤝 Contributing
+Contributions are welcome! To contribute:
+<br>
+1. Fork this repository.
+2. Create a new branch (git checkout -b feature/newFeature).
+3. Make your changes and commit (git commit -m 'Add newFeature').
+4. Push to the branch (git push origin feature/newFeature).
+5. Open a Pull Request.
+## 📝 License
+This project is licensed under the MIT License - see the LICENSE file for details.
+## 🙌 Acknowledgements
+Special thanks to TomNomNom for the original project.
